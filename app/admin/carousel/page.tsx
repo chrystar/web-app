@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import type { Banner } from "@/lib/banner-service";
+import { adminFetch } from "@/lib/admin-fetch";
 
 export default function CarouselPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function CarouselPage() {
   const fetchBanners = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/banners");
+      const response = await adminFetch("/api/banners");
       if (!response.ok) throw new Error("Failed to fetch banners");
       const data = await response.json();
       setBanners(data);
@@ -34,7 +35,7 @@ export default function CarouselPage() {
   const handleDelete = async (id: number) => {
     if (deleteId === id) {
       try {
-        const response = await fetch(`/api/banners/${id}`, { method: "DELETE" });
+        const response = await adminFetch(`/api/banners/${id}`, { method: "DELETE" });
         if (!response.ok) throw new Error("Failed to delete");
         setBanners(banners.filter((b) => b.id !== id));
         setDeleteId(null);

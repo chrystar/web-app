@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Edit2, Trash2, Save, X, Upload } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Program {
   id: number;
@@ -57,7 +58,7 @@ export default function AdminProgramsPage() {
   const loadPrograms = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/programs");
+      const response = await adminFetch("/api/programs");
       if (!response.ok) throw new Error("Failed to load programs");
       const data = await response.json();
       setPrograms(Array.isArray(data) ? data : []);
@@ -107,7 +108,7 @@ export default function AdminProgramsPage() {
       const uploadPayload = new FormData();
       uploadPayload.append("file", file);
 
-      const response = await fetch("/api/upload", {
+      const response = await adminFetch("/api/upload", {
         method: "POST",
         body: uploadPayload,
       });
@@ -155,7 +156,7 @@ export default function AdminProgramsPage() {
         sort_order: Number(form.sort_order || 0),
       };
 
-      const response = await fetch(editingId ? `/api/programs/${editingId}` : "/api/programs", {
+      const response = await adminFetch(editingId ? `/api/programs/${editingId}` : "/api/programs", {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -180,7 +181,7 @@ export default function AdminProgramsPage() {
     if (!confirm("Delete this program?")) return;
 
     try {
-      const response = await fetch(`/api/programs/${id}`, { method: "DELETE" });
+      const response = await adminFetch(`/api/programs/${id}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete program");
       setPrograms((prev) => prev.filter((program) => program.id !== id));
       if (editingId === id) resetForm();
@@ -192,7 +193,7 @@ export default function AdminProgramsPage() {
 
   const toggleActive = async (program: Program) => {
     try {
-      const response = await fetch(`/api/programs/${program.id}`, {
+      const response = await adminFetch(`/api/programs/${program.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_active: !program.is_active }),

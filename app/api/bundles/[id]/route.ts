@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin-guard";
 import { NextRequest, NextResponse } from "next/server";
 
 const BUNDLES_TABLE_MISSING_CODE = "PGRST205";
@@ -61,6 +62,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
     const bundleId = Number(id);
 
@@ -111,6 +117,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
     const bundleId = Number(id);
 

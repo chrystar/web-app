@@ -1,4 +1,5 @@
 import { productService } from "@/lib/product-service";
+import { requireAdmin } from "@/lib/admin-guard";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -30,6 +31,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const body = await request.json();
 
     const product = await productService.createProduct({

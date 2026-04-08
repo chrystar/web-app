@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -68,6 +69,11 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const body = await request.json();
 
     const payload: ContactSettings = {

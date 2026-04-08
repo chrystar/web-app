@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Package, ShoppingBag, TrendingUp, Users } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Product {
   id: number;
@@ -63,8 +64,8 @@ export default function AdminDashboard() {
         setError("");
 
         const [productsResponse, ordersResponse] = await Promise.all([
-          fetch("/api/products"),
-          fetch("/api/orders"),
+          adminFetch("/api/products"),
+          adminFetch("/api/orders"),
         ]);
 
         if (!productsResponse.ok) {

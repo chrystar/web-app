@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Upload, ArrowLeft } from 'lucide-react';
 import type { Banner } from '@/lib/banner-service';
+import { adminFetch } from '@/lib/admin-fetch';
 
 export default function EditBannerPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function EditBannerPage() {
   useEffect(() => {
     const fetchBanner = async () => {
       try {
-        const response = await fetch(`/api/banners/${bannerId}`);
+        const response = await adminFetch(`/api/banners/${bannerId}`);
         if (!response.ok) throw new Error('Failed to fetch banner');
         const data = await response.json();
         setBanner(data);
@@ -70,7 +71,7 @@ export default function EditBannerPage() {
       const formDataForUpload = new FormData();
       formDataForUpload.append('file', file);
 
-      const response = await fetch('/api/upload', {
+      const response = await adminFetch('/api/upload', {
         method: 'POST',
         body: formDataForUpload,
       });
@@ -109,7 +110,7 @@ export default function EditBannerPage() {
         throw new Error('Image is required');
       }
 
-      const response = await fetch(`/api/banners/${bannerId}`, {
+      const response = await adminFetch(`/api/banners/${bannerId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

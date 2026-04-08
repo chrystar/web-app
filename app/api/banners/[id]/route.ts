@@ -1,4 +1,5 @@
 import { bannerService } from '@/lib/banner-service';
+import { requireAdmin } from '@/lib/admin-guard';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,11 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
 
 export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await props.params;
     const body = await request.json();
 
@@ -41,6 +47,11 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
 
 export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await props.params;
     await bannerService.deleteBanner(parseInt(id));
     return NextResponse.json({ success: true });

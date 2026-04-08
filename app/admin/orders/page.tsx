@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDown, Loader, Search, Filter, AlertCircle } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface OrderItem {
   id: string;
@@ -49,7 +50,7 @@ export default function OrdersPage() {
     try {
       setLoading(true);
       setError("");
-      const response = await fetch("/api/orders");
+      const response = await adminFetch("/api/orders");
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
@@ -68,7 +69,7 @@ export default function OrdersPage() {
   const handleStatusChange = async (orderId: string, newStatus: Order["order_status"]) => {
     try {
       setUpdatingId(orderId);
-      const response = await fetch("/api/orders", {
+      const response = await adminFetch("/api/orders", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: orderId, order_status: newStatus }),
@@ -89,7 +90,7 @@ export default function OrdersPage() {
   const handleNotesChange = async (orderId: string, notes: string) => {
     try {
       setUpdatingId(orderId);
-      const response = await fetch("/api/orders", {
+      const response = await adminFetch("/api/orders", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: orderId, notes }),
@@ -153,10 +154,10 @@ export default function OrdersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">Orders Management</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">Orders Management</h1>
         
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
             <p className="text-sm text-slate-600">Total Orders</p>
             <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
@@ -245,9 +246,9 @@ export default function OrdersPage() {
                 {/* Order Header */}
                 <button
                   onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                  className="w-full px-4 sm:px-6 py-4 flex items-start sm:items-center justify-between hover:bg-slate-50 transition-colors"
                 >
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900 truncate">{order.id}</p>
                       <p className="text-sm text-slate-600 truncate">{order.customer_name}</p>
@@ -260,7 +261,7 @@ export default function OrdersPage() {
                         {getStatusIcon(order.order_status)} {order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1)}
                       </span>
                     </div>
-                    <div className="text-right min-w-0">
+                    <div className="text-left sm:text-right min-w-0">
                       <p className="font-semibold text-slate-900">₦{order.total.toLocaleString()}</p>
                     </div>
                   </div>
@@ -273,7 +274,7 @@ export default function OrdersPage() {
 
                 {/* Order Details */}
                 {expandedId === order.id && (
-                  <div className="border-t border-slate-200 px-6 py-6 bg-slate-50 space-y-6">
+                  <div className="border-t border-slate-200 px-4 sm:px-6 py-6 bg-slate-50 space-y-6">
                     {/* Customer & Delivery Info */}
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
@@ -331,7 +332,7 @@ export default function OrdersPage() {
                     <div>
                       <h4 className="font-semibold text-slate-900 mb-3">Order Items</h4>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full min-w-[520px] text-sm">
                           <thead className="border-b border-slate-300 bg-slate-100">
                             <tr>
                               <th className="text-left py-2 px-2 text-slate-700">Product</th>
@@ -356,7 +357,7 @@ export default function OrdersPage() {
                       </div>
                       
                       {/* Order Total */}
-                      <div className="flex justify-end mt-4 pt-4 border-t border-slate-300">
+                      <div className="flex justify-start sm:justify-end mt-4 pt-4 border-t border-slate-300">
                         <div className="space-y-1 min-w-0">
                           <p className="text-right text-slate-600">Subtotal: ₦{order.subtotal.toLocaleString()}</p>
                           <p className="text-right text-slate-600">Delivery Fee: ₦{order.delivery_fee.toLocaleString()}</p>

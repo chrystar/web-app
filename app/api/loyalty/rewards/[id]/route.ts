@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,6 +15,11 @@ const supabase = createClient(
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
     const body = await request.json();
 
@@ -75,6 +81,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const adminCheck = await requireAdmin(_request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
 
     const { error } = await supabase.from("loyalty_rewards").delete().eq("id", Number(id));

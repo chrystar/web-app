@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { loyaltyService } from '@/lib/loyalty-service';
+import { requireAdmin } from '@/lib/admin-guard';
 
 // Create a singleton Supabase client for the API routes
 const getSupabaseClient = () => {
@@ -224,6 +225,11 @@ export async function GET(request: Request) {
     }
 
     // If no filters, return all orders (for admin dashboard)
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) {
       console.error('Fetch all orders error:', error);
@@ -244,6 +250,11 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const body = await request.json();
     const { id, order_status, notes } = body;
 

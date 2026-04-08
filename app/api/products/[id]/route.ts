@@ -1,4 +1,5 @@
 import { productService } from "@/lib/product-service";
+import { requireAdmin } from "@/lib/admin-guard";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -23,6 +24,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
     const body = await request.json();
 
@@ -50,6 +56,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { id } = await params;
     await productService.deleteProduct(parseInt(id));
     return NextResponse.json({ success: true });

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Product {
   name: string;
@@ -94,7 +95,7 @@ export default function AddProductPage() {
         const imageFormData = new FormData();
         imageFormData.append("file", imageFile);
 
-        const uploadResponse = await fetch("/api/upload", {
+        const uploadResponse = await adminFetch("/api/upload", {
           method: "POST",
           body: imageFormData,
         });
@@ -114,7 +115,7 @@ export default function AddProductPage() {
         image_url: imageUrl || null,
       };
 
-      const response = await fetch("/api/products", {
+      const response = await adminFetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),

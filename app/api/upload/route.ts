@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,6 +9,11 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -31,7 +37,7 @@ export async function POST(request: NextRequest) {
     const filename = `products/${timestamp}-${random}-${file.name}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("products")
       .upload(filename, file, {
         cacheControl: "3600",

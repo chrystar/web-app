@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Edit2, Trash2, Save, X, Upload } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Bundle {
   id: number;
@@ -57,7 +58,7 @@ export default function AdminBundlesPage() {
   const loadBundles = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/bundles");
+      const response = await adminFetch("/api/bundles");
       if (!response.ok) throw new Error("Failed to load bundles");
       const data = await response.json();
       setBundles(Array.isArray(data) ? data : []);
@@ -107,7 +108,7 @@ export default function AdminBundlesPage() {
       const uploadPayload = new FormData();
       uploadPayload.append("file", file);
 
-      const response = await fetch("/api/upload", {
+      const response = await adminFetch("/api/upload", {
         method: "POST",
         body: uploadPayload,
       });
@@ -160,7 +161,7 @@ export default function AdminBundlesPage() {
         sort_order: Number(form.sort_order || 0),
       };
 
-      const response = await fetch(editingId ? `/api/bundles/${editingId}` : "/api/bundles", {
+      const response = await adminFetch(editingId ? `/api/bundles/${editingId}` : "/api/bundles", {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -185,7 +186,7 @@ export default function AdminBundlesPage() {
     if (!confirm("Delete this bundle?")) return;
 
     try {
-      const response = await fetch(`/api/bundles/${id}`, { method: "DELETE" });
+      const response = await adminFetch(`/api/bundles/${id}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete bundle");
       setBundles((prev) => prev.filter((bundle) => bundle.id !== id));
       if (editingId === id) resetForm();
@@ -197,7 +198,7 @@ export default function AdminBundlesPage() {
 
   const toggleActive = async (bundle: Bundle) => {
     try {
-      const response = await fetch(`/api/bundles/${bundle.id}`, {
+      const response = await adminFetch(`/api/bundles/${bundle.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_active: !bundle.is_active }),

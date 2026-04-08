@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Product {
   id: number;
@@ -28,7 +29,7 @@ export default function ProductsPage() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/products");
+      const response = await adminFetch("/api/products");
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
       setProducts(data);
@@ -49,7 +50,7 @@ export default function ProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await adminFetch(`/api/products/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete product");
@@ -75,11 +76,11 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Products</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Products</h1>
         <button
           onClick={() => router.push("/admin/products/add")}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add Product
@@ -93,7 +94,8 @@ export default function ProductsPage() {
       )}
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px]">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Name</th>
@@ -130,6 +132,7 @@ export default function ProductsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

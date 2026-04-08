@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { adminFetch } from "@/lib/admin-fetch";
 
 interface Product {
   id: number;
@@ -40,7 +41,7 @@ export default function EditProductPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/products/${productId}`);
+        const response = await adminFetch(`/api/products/${productId}`);
         if (!response.ok) throw new Error("Failed to load product");
         const data = await response.json();
         setFormData(data);
@@ -122,7 +123,7 @@ export default function EditProductPage() {
         const imageFormData = new FormData();
         imageFormData.append("file", imageFile);
 
-        const uploadResponse = await fetch("/api/upload", {
+        const uploadResponse = await adminFetch("/api/upload", {
           method: "POST",
           body: imageFormData,
         });
@@ -142,7 +143,7 @@ export default function EditProductPage() {
         image_url: imageUrl || null,
       };
 
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await adminFetch(`/api/products/${productId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),

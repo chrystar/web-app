@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Save, Plus, Edit2, Trash2, X } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type RuleType = "points_per_order" | "points_per_amount" | "spend_threshold_reward";
 type RewardType = "discount_coupon" | "free_delivery" | "free_item" | "custom";
@@ -153,9 +154,9 @@ export default function AdminLoyaltyPage() {
     try {
       setLoading(true);
       const [configResponse, rulesResponse, rewardsResponse] = await Promise.all([
-        fetch("/api/loyalty/config"),
-        fetch("/api/loyalty/rules"),
-        fetch("/api/loyalty/rewards"),
+        adminFetch("/api/loyalty/config"),
+        adminFetch("/api/loyalty/rules"),
+        adminFetch("/api/loyalty/rewards"),
       ]);
 
       if (!configResponse.ok) throw new Error("Failed to load loyalty config");
@@ -184,7 +185,7 @@ export default function AdminLoyaltyPage() {
 
     try {
       setConfigSaving(true);
-      const response = await fetch("/api/loyalty/config", {
+      const response = await adminFetch("/api/loyalty/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_enabled: config.is_enabled, points_label: config.points_label }),
@@ -261,7 +262,7 @@ export default function AdminLoyaltyPage() {
           : null,
       };
 
-      const response = await fetch(
+      const response = await adminFetch(
         editingRuleId ? `/api/loyalty/rules/${editingRuleId}` : "/api/loyalty/rules",
         {
           method: editingRuleId ? "PUT" : "POST",
@@ -288,7 +289,7 @@ export default function AdminLoyaltyPage() {
     if (!confirm("Delete this rule?")) return;
 
     try {
-      const response = await fetch(`/api/loyalty/rules/${ruleId}`, { method: "DELETE" });
+      const response = await adminFetch(`/api/loyalty/rules/${ruleId}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete rule");
       await loadAll();
       if (editingRuleId === ruleId) resetRuleForm();
@@ -355,7 +356,7 @@ export default function AdminLoyaltyPage() {
           : null,
       };
 
-      const response = await fetch(
+      const response = await adminFetch(
         editingRewardId ? `/api/loyalty/rewards/${editingRewardId}` : "/api/loyalty/rewards",
         {
           method: editingRewardId ? "PUT" : "POST",
@@ -382,7 +383,7 @@ export default function AdminLoyaltyPage() {
     if (!confirm("Delete this reward?")) return;
 
     try {
-      const response = await fetch(`/api/loyalty/rewards/${rewardId}`, { method: "DELETE" });
+      const response = await adminFetch(`/api/loyalty/rewards/${rewardId}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete reward");
       await loadAll();
       if (editingRewardId === rewardId) resetRewardForm();

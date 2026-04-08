@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, ArrowLeft } from 'lucide-react';
+import { adminFetch } from '@/lib/admin-fetch';
 
 export default function AddBannerPage() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function AddBannerPage() {
       const formDataForUpload = new FormData();
       formDataForUpload.append('file', file);
 
-      const response = await fetch('/api/upload', {
+      const response = await adminFetch('/api/upload', {
         method: 'POST',
         body: formDataForUpload,
       });
@@ -75,7 +76,7 @@ export default function AddBannerPage() {
         throw new Error('Image is required');
       }
 
-      const response = await fetch('/api/banners', {
+      const response = await adminFetch('/api/banners', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

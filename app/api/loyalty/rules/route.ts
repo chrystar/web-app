@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,8 +25,13 @@ const missingSchemaResponse = () =>
     { status: 500 }
   );
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const { data, error } = await supabase
       .from("loyalty_rules")
       .select("*")
@@ -48,6 +54,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck.error) {
+      return adminCheck.error;
+    }
+
     const body = await request.json();
 
     if (!body.name || !body.rule_type) {
